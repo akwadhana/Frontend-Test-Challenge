@@ -33,7 +33,7 @@ interface Campaign {
   status: CampaignStatus;
 }
 
-// Delete Confirmation Modal Component
+
 const DeleteModal: React.FC<{
   open: boolean;
   campaignName: string;
@@ -100,7 +100,7 @@ const DeleteModal: React.FC<{
   );
 };
 
-// Success Modal Component
+
 const SuccessModal: React.FC<{
   open: boolean;
   campaignName: string;
@@ -246,13 +246,12 @@ export const CampaignsTable: React.FC = () => {
     fetchCampaigns();
   }, []);
 
-  // Open delete confirmation modal
   const openDeleteModal = (campaign: Campaign) => {
     setCampaignToDelete(campaign);
     setDeleteModalOpen(true);
   };
 
-  // Close delete confirmation modal
+ 
   const closeDeleteModal = () => {
     if (!deleteLoading) {
       setDeleteModalOpen(false);
@@ -260,13 +259,13 @@ export const CampaignsTable: React.FC = () => {
     }
   };
 
-  // Close success modal
+
   const closeSuccessModal = () => {
     setSuccessModalOpen(false);
     setDeletedCampaignName("");
   };
 
-  // Actual delete operation
+
   const handleDelete = async () => {
     if (!campaignToDelete) return;
 
@@ -275,10 +274,9 @@ export const CampaignsTable: React.FC = () => {
       await api.delete(`/api/campaign/${campaignToDelete.id}`);
       setCampaigns((prev) => prev.filter((c) => c.id !== campaignToDelete.id));
       
-      // Store the deleted campaign name for success modal
       setDeletedCampaignName(campaignToDelete.name);
       
-      // Close delete modal and open success modal
+     
       setDeleteModalOpen(false);
       setSuccessModalOpen(true);
       setCampaignToDelete(null);
@@ -510,7 +508,7 @@ export const CampaignsTable: React.FC = () => {
         </div>
       </div>
 
-      {/* Delete Confirmation Modal */}
+ 
       <DeleteModal
         open={deleteModalOpen}
         campaignName={campaignToDelete?.name || ""}
@@ -519,7 +517,7 @@ export const CampaignsTable: React.FC = () => {
         onConfirm={handleDelete}
       />
 
-      {/* Success Modal */}
+  
       <SuccessModal
         open={successModalOpen}
         campaignName={deletedCampaignName}

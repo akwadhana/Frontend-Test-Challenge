@@ -44,13 +44,13 @@ export default function OverviewEmpty({
 
   return (
     <div className="min-h-[70vh] bg-emerald-50/20 p-4 sm:p-8">
-      {/* Header row */}
+   
       <div className="mx-auto max-w-6xl">
         <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-xl font-semibold text-teal-800">Overview</h1>
 
           <div className="flex items-center gap-2">
-            {/* Date Range dropdown */}
+           
             <div className="relative">
               <button
                 onClick={() => setMenuOpen((o) => !o)}
@@ -137,7 +137,7 @@ export default function OverviewEmpty({
               )}
             </div>
 
-            {/* Export button */}
+         
             <button
               onClick={() => onExport?.(range)}
               className="inline-flex items-center gap-2 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 shadow-sm hover:bg-gray-50"
@@ -148,8 +148,7 @@ export default function OverviewEmpty({
           </div>
         </div>
 
-        {/* Empty state */}
-        <div className="mx-auto flex max-w-xl flex-col items-center rounded-2xl bg-white p-10 text-center shadow-sm ring-1 ring-black/5">
+        <div className="mx-auto flex max-w-xl flex-col items-center rounded-2xl  p-10 text-center  ">
           <EmptyIllustration className="h-32 w-32 text-gray-300" />
           <p className="mt-6 text-sm text-gray-600">
             No activity yet. Create a new campaign to get started
@@ -167,7 +166,7 @@ export default function OverviewEmpty({
   );
 }
 
-/* Icons + simple empty illustration */
+
 function CalendarIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...props}>
