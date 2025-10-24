@@ -2,13 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../api/axios";
 
-// Confirm (Stop/Delete) modal
 function ConfirmModal({
   open,
   title,
   message,
   cancelText = "Cancel",
-  confirmText = "Delete Campaign", // change to "Stop Campaign" if you prefer
+  confirmText = "Delete Campaign",
   confirming = false,
   onCancel,
   onConfirm,
@@ -43,7 +42,7 @@ function ConfirmModal({
       <div
         role="dialog"
         aria-modal="true"
-        className="relative z-10 w-full max-w-lg rounded-2xl bg-white shadow-xl ring-1 ring-black/5 min-h-[280px] flex flex-col" // Added min-height and flex-col
+        className="relative z-10 w-full max-w-lg rounded-2xl bg-white shadow-xl ring-1 ring-black/5 min-h-[280px] flex flex-col"
       >
         <div className="p-6 flex-1 flex flex-col justify-center">
           <h3 className="text-lg font-semibold text-gray-900 text-center">
@@ -77,6 +76,81 @@ function ConfirmModal({
   );
 }
 
+// Activation confirmation modal
+function ActivateConfirmModal({
+  open,
+  title,
+  message,
+  cancelText = "Cancel",
+  confirmText = "Activate Campaign",
+  confirming = false,
+  onCancel,
+  onConfirm,
+}: {
+  open: boolean;
+  title: string;
+  message: React.ReactNode;
+  cancelText?: string;
+  confirmText?: string;
+  confirming?: boolean;
+  onCancel: () => void;
+  onConfirm: () => void;
+}) {
+  React.useEffect(() => {
+    const onEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && !confirming) onCancel();
+    };
+    if (open) window.addEventListener("keydown", onEsc);
+    return () => window.removeEventListener("keydown", onEsc);
+  }, [open, onCancel, confirming]);
+
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div
+        className="fixed inset-0 bg-black/40"
+        onClick={() => {
+          if (!confirming) onCancel();
+        }}
+      />
+      <div
+        role="dialog"
+        aria-modal="true"
+        className="relative z-10 w-full max-w-lg rounded-2xl bg-white shadow-xl ring-1 ring-black/5 min-h-[280px] flex flex-col"
+      >
+        <div className="p-6 flex-1 flex flex-col justify-center">
+          <h3 className="text-lg font-semibold text-gray-900 text-center">
+            {title}
+          </h3>
+          <div className="my-4 border-t border-gray-100" />
+          <div className="text-sm text-gray-600 flex-1 flex items-center justify-center">
+            {message}
+          </div>
+        </div>
+        <div className="border-t border-gray-100 px-6 py-4 flex justify-center gap-3">
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={confirming}
+            className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 disabled:opacity-60"
+          >
+            {cancelText}
+          </button>
+          <button
+            type="button"
+            onClick={onConfirm}
+            disabled={confirming}
+            className="inline-flex items-center rounded-md bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:bg-gray-400"
+          >
+            {confirming ? "Activating..." : confirmText}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function DeletedModal({
   open,
   name,
@@ -100,8 +174,6 @@ function DeletedModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="fixed inset-0 bg-black/40" onClick={onBack} />
       <div className="relative z-10 w-full max-w-lg rounded-2xl bg-white shadow-xl ring-1 ring-black/5 min-h-[280px] flex flex-col justify-center">
-        {" "}
-        {/* Added height and centering */}
         <div className="p-6 text-center">
           <h3 className="text-lg font-semibold text-gray-900">
             Campaign Deleted
@@ -138,6 +210,7 @@ export default function CampaignInformation() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const [showStopModal, setShowStopModal] = useState(false);
+  const [showActivateModal, setShowActivateModal] = useState(false);
   const [showDeletedModal, setShowDeletedModal] = useState(false);
 
   useEffect(() => {
@@ -178,6 +251,10 @@ export default function CampaignInformation() {
     setShowStopModal(true);
   };
 
+  const handleActivate = () => {
+    setShowActivateModal(true);
+  };
+
   const confirmStopCampaign = async () => {
     setSaving(true);
     setApiError(null);
@@ -214,10 +291,7 @@ export default function CampaignInformation() {
     }
   };
 
-  const activateCampaign = async () => {
-    if (!window.confirm("Are you sure you want to activate this campaign?"))
-      return;
-
+  const confirmActivateCampaign = async () => {
     setSaving(true);
     setApiError(null);
 
@@ -239,6 +313,7 @@ export default function CampaignInformation() {
         setForm(updated);
       }
 
+      setShowActivateModal(false);
       setSuccessMessage("Campaign activated successfully!");
       setTimeout(() => setSuccessMessage(null), 3000);
     } catch (error: any) {
@@ -503,11 +578,11 @@ export default function CampaignInformation() {
             ) : (
               <button
                 type="button"
-                onClick={activateCampaign}
+                onClick={handleActivate}
                 disabled={saving}
                 className="inline-flex items-center rounded-md bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:bg-gray-400"
               >
-                {saving ? "Activating..." : "Activate Campaign"}
+                Activate Campaign
               </button>
             )}
 
@@ -566,6 +641,30 @@ export default function CampaignInformation() {
         confirming={saving}
         onCancel={() => setShowStopModal(false)}
         onConfirm={confirmStopCampaign}
+      />
+
+      <ActivateConfirmModal
+        open={showActivateModal}
+        title="Activate Campaign"
+        message={
+          <div className="text-center">
+            <p>
+              Are you sure you want to activate{" "}
+              <span className="font-semibold">
+                {form.CampaignName || form.campaignName || "this"}
+              </span>{" "}
+              campaign?
+            </p>
+            <p className="mt-1 text-gray-500">
+              This will make the campaign active and start processing.
+            </p>
+          </div>
+        }
+        cancelText="Cancel"
+        confirmText="Activate Campaign"
+        confirming={saving}
+        onCancel={() => setShowActivateModal(false)}
+        onConfirm={confirmActivateCampaign}
       />
 
       <DeletedModal
